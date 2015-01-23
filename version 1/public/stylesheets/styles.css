@@ -1,0 +1,15 @@
+div
+{
+	background-color: #dddddd;
+	padding: 10px;
+	height: 140px;
+	width: 400px;
+	margin: 40px 40px 40px 0px;
+}
+
+div img
+{
+	height: 140px;
+	width: 140px;
+	padding-right: 10px
+}

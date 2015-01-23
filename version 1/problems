@@ -1,0 +1,8 @@
+problems- 
+
+
+clicking show contacts loops over and over, getting larger and larger each click
+because i keep adding event listeners, so there is more than one per button. 
+buttt if i don;t call it the way i want--- they dont work. 
+
+need to figure out how to do this "all encompasing eventlistener"
