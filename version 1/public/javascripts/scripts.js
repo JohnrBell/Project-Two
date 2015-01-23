@@ -80,11 +80,13 @@ var edit_contact_template = "\
 <input id=address value='{{address}}'><br>\
 <input id=cell value='{{phone_number}}'><br>\
 <input id=picture size=60 value='{{picture}}'><br>\
+
 <button class=save>Save</button><br><br></div>"
 
 
-
-
+// <select id=movie-select>\
+// <option value="">Select a movie...</option>\
+// </select>\
 // ***ADD EVENT LISTENERS***
 
 function addEventListener(){

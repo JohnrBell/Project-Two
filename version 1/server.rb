@@ -52,7 +52,7 @@ get("/contacts") do
 end
 
 get("/contacts/:id") do
-  Contact.find_by(params[:id]).to_json
+  Contact.find_by(id: params[:id]).to_json
 end
 
 post("/contacts") do
@@ -62,17 +62,13 @@ end
 
 put("/contacts/:id") do
   contact = Contact.find(params[:id])
-  data = request.body.read
-  data = JSON.parse(data)
-  contact.update(data)
-
+  contact.update(contact_params(params))
   contact.to_json
 end
 
 delete("/contacts/:id") do
   contact = Contact.find(params[:id])
   contact.destroy
-
   contact.to_json
 end
 
