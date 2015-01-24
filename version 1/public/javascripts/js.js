@@ -1,4 +1,4 @@
-console.log("JS.JS Linked...");
+console.log("### js.js linked ###");
 
 //GETS A LIST OF CATEGORIES
 function getCategories(){
@@ -42,6 +42,7 @@ function getContacts(whatCategoryId,templateToUse){
 			$('#contacts').append(Mustache.render(templateToUse,data[i]));
 		}//close for loop	
 		$('#contacts').append(addContactForm)
+		getRandomPic()
 	})//close .done
 }//close getContacts
 
@@ -86,6 +87,17 @@ function addNew(whatcategory){
 	})//close .done
 }
 
+//GETS A RANDOM PICTURE URL FROM RANDOMUSER.ME
+function getRandomPic(){
+	$.ajax({
+	  url: 'http://api.randomuser.me/',
+	  dataType: 'json'
+	}).done(function(data){
+		imgSrc = data.results[0].user.picture.medium
+	  console.log('finished fetching: '+imgSrc);
+	  $('input#add_picture').attr('value', imgSrc)
+	})
+}
 
 
 
@@ -120,33 +132,64 @@ function addNew(whatcategory){
 	})//close editContact click
 
 
+//BUTTON - DELETE ON SPECIFIC CONTACT
+	$('#contacts').on('click', '.delete', function(event){
+		idofpersontodelete = this.parentElement.getAttribute("data-contact-id")
+		categoryid = this.parentElement.getAttribute('data-category-id')
+		console.log("trying to delete person #"+idofpersontodelete)
+		$.ajax({
+			url: ('/contacts/'+idofpersontodelete),
+			type: 'DELETE'
+		}).done(function(data){
+					getContacts(categoryid,contact_template)
+		})
+	})//close deleteContact click
+
+
 //BUTTON - CANCEL ON EDIT FORM
 	$('body').on('click', '.cancel', function(event){
-		console.log('clicked on cancel edit');
 		this.parentElement.remove()
 	})//close edit cancel click
 
 
 //BUTTON - SAVE ON EDIT FORM 
 	$('body').on('click', '.save', function(event){
-		if (($('#categorySelect option:selected').val())=="Please Select a Category"){
-			alert('Please Select a Category')
+		if (
+			($('#name').val() == '') |
+			($('#age').val() == '') |
+			($('#address').val() == '') |
+			($('#cell').val() == '')
+			)
+		{
+			alert('Error: Please fill out all info.');
 		}else{
-			console.log('clicked on save edit');
-			id = this.parentElement.getAttribute('data-contact-id')
-			saveEditChanges(id);
-			this.parentElement.remove()
+			if (($('#categorySelect option:selected').val())=="Please Select a Category"){
+				alert('Please Select a Category')
+			}else{
+				id = this.parentElement.getAttribute('data-contact-id')
+				saveEditChanges(id);
+				this.parentElement.remove()
+			}
 		}
 	})//close edit save click
 
 
 //BUTTON - SUBMIT ON ADD NEW FORM
-	$('body').on('click', '.addnew', function(event){
-		debugger
-		categoryid = this.parentNode.parentNode.children[1].getAttribute('data-category-id')
-		addNew(categoryid)
-		console.log('clicked on add new person to category #'+categoryid);
-		// this.parentElement.remove()
+	$('body').on('click', '.addnew', function(event){	
+		if (
+			($('#add_name').val() == '') |
+			($('#add_age').val() == '') |
+			($('#add_address').val() == '') |
+			($('#add_cell').val() == '')
+			)
+		{
+			alert('Error: Please fill out all info.');
+		}else{
+			categoryid = this.parentNode.parentNode.children[1].getAttribute('data-category-id')
+			addNew(categoryid)
+			console.log('clicked on add new person to category #'+categoryid);
+			// this.parentElement.remove()
+		}
 	})//close addnew click
 
 
@@ -178,7 +221,7 @@ var contact_template = "\
 Age- {{age}}<br>\
 Address - {{address}}<br>\
 Cell - {{phone_number}}<br>\
-<button class=edit>Edit</button><br>\
+<button class=edit>Edit</button><button class=delete>Delete</button><br>\
 <br><br></div>"
 
 var edit_contact_template = "\
@@ -201,7 +244,7 @@ var addContactForm = "\
 <input id=add_age placeholder='age'><br>\
 <input id=add_address placeholder='address'><br>\
 <input id=add_cell placeholder='phone_number'><br>\
-<input id=add_picture size=60 placeholder='picture url'><br>\
+<input id=add_picture size=60 placeholder='attempting to fetch a picture url'><br>\
 <button class=addnew>Save</button>\
 </div>"
 
