@@ -8,11 +8,11 @@
 
 	<div class="container-fluid">
 	<div class="row">
-	  <div class="col-sm-2">
-			<h1>Categories</h1><br>
+	  <div class="col-sm-3"><center>
+			<h1 id='h1cat'>Categories</h1>
 		  <ul class="list-unstyled" id='categories'></ul>
-	  </div>
-	  <div class="col-sm-7" id='right'>
+	  </center></div>
+	  <div class="col-sm-8" id='right'>
 	  	<span id='contacts'></span>
 	  </div>
 	</div>
@@ -24,6 +24,9 @@
   <script src="/javascripts/js.js"></script>
   <script src="../bootstrap/js/bootstrap.min.js"></script>
 
+  <script src="../jquery-ui/external/jquery/jquery.js"></script>
+	<script src="../jquery-ui/jquery-ui.min.js"></script>
+
   </body>
 </html>
 
@@ -31,6 +34,15 @@
 <!-- TEMPLATES -->
 <!-- TEMPLATES -->
 <!-- TEMPLATES -->
+<script id='searchtemplate' type="x-tmpl-mustache">
+<br><h5>Search for a contact</h5>
+ <div id="search-container">
+    <form>
+      <input type="text" class='form-control' id="search-bar" placeholder="Enter a search term..."><br>
+      <button class='btn btn-primary' id='submitsearch'>Search</button>
+    </form>
+  </div><br>
+</script>
 
 <script id='addcontacttemplate' type="x-tmpl-mustache">
 <form class='form form-horizontal'>
@@ -63,24 +75,48 @@
 </script>
 
 <script id="contact_template" type="x-tmpl-mustache">
-<div class='contact' data-contact-id={{id}} data-category-id={{category_id}}>
-<img class='img-circle' align='left' src={{picture}}>
-<h4>{{name}}</h4>
-{{age}} years old<br>
-Address - {{address}}<br>
-Cell - {{phone_number}}<br><br>
-<button class='btn btn-danger' id='delete'>Delete</button><br>
-<br><br></div>
+	<div class="row">
+		<div class="col-sm-3" id='image'>
+	  	<img class='img-circle' align='left' src={{picture}}>
+	  </div>
+	  <div class="col-sm-4">
+			<div class='contact' data-contact-id={{id}} data-category-id={{category_id}}>
+				<h4>{{name}}</h4>
+				{{age}} years old<br>
+				Address - {{address}}<br>
+				Cell - {{phone_number}}<br><br>
+				<button class='btn btn-danger' id='delete'>Delete</button>
+			</div>
+		</div>
+		<div class="col-sm-5" id='maphere'>
+	  </div>
+  </div>	
+  <br>
 </script>
 
 <script id="category_template" type="x-tmpl-mustache">
-<li id='category'>
+<center><br><li id='category'>
 <h4>{{name}}</h4>
 </li>
 <button id='expand' class='btn btn-primary' data-category-id={{id}}>View Contacts</button>
 <br><br>
 </script>
 
+<script id='mymodalbutton' type='x-tmpl-mustache'>
+<button type="button" id='edit' class="btn btn-primary btn" data-toggle="modal" data-target="#myModal">
+  Edit
+</button>
+</script>
+
+<script id='mapdisplay' type='x-tmpl-mustache'>
+<iframe id='themap'
+	align=right 
+  width="300"
+  height="225"
+  frameborder="0" style="border:0"
+  src='https://www.google.com/maps/embed/v1/place?key=AIzaSyAC-HdPVx523TS3Soo9xSB7zXaUsT0dhTs&q=+{{address}}'>
+</iframe>
+</script>
 
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -97,8 +133,4 @@ Cell - {{phone_number}}<br><br>
 </div>
 
 
-<script id='mymodalbutton' type='x-tmpl-mustache'>
-<button type="button" id='edit' class="btn btn-primary btn" data-toggle="modal" data-target="#myModal">
-  Edit
-</button>
-</script>
+

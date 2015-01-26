@@ -9,6 +9,19 @@ div.narrowit{
 	width:400px;
 }
 
+#search-container{
+	width:180px;
+}
+
 #right{
-	margin-left: 80px;
+	/*background-color: red;*/
+}
+
+.contact{
+	/*background-color: blue;*/
+	/*height: 400px;*/
+}
+
+#maphere{
+	/*background-color: pink;*/
 }

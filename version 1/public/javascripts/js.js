@@ -7,9 +7,11 @@ function getCategories(){
 		type: 'GET',
 		dataType: 'json'
 	}).done(function(data){	
+		var searchtemplate = $('#searchtemplate').html();
+		($('#categories')).after(searchtemplate);
 		for (var i=0;i<data.length;i++){
 			var category_template = $('#category_template').html();
-			$('#categories').append(Mustache.render(category_template,data[i]));
+			$('#categories').append(Mustache.render(category_template,data[i]));	
 		}//close for loop
 	})//close .done
 }//close getCategories
@@ -21,7 +23,6 @@ function makeCategorySelect(){
 		type: 'GET',
 		dataType: 'json'
 	}).done(function(data){	
-
 		$('#save').before("<select class='form-control' id=categorySelect></select><br>");
 		$('#categorySelect').append("<option>Please Select a Category</option>");
 	 	for (var i=0;i<data.length;i++){
@@ -46,9 +47,18 @@ function getContacts(whatCategoryId,templateToUse){
 		for (var i=0;i<data.length;i++){
 			$('#contacts').append(Mustache.render(templateToUse,data[i]));
 			($('.contact .btn').last()).before(modalbutton);
+			
+			template = makeMap(data[i].address)
+			$('.row #maphere').last().append(template)
 		}//close for loop	
+			$('#contacts h1').hide()
+			$('#contacts h1').fadeIn(1000);
+			$('.contact').hide();
+			$('.contact').fadeIn(1000);
+
 		var addContactForm = $('#addcontacttemplate').html();
-		$('#contacts').append(addContactForm);
+		$('#contact').append(addContactForm);
+
 		getRandomPic();
 	})//close .done
 }//close getContacts
@@ -109,7 +119,14 @@ function getRandomPic(){
 	})
 }
 
-
+function makeMap(address){
+	var maptemplate = $('#mapdisplay').html()
+	var address = {address: address}
+	address.address = address.address.replace(/ /g,"+")
+	address.address = address.address.replace(/,/g,"")
+	var template = Mustache.render(maptemplate,address)
+	return template;
+}
 
 
 
@@ -199,9 +216,47 @@ function getRandomPic(){
 	})//close addnew click
 
 
+//BUTTON - SEARCH!
+$('body').on('click', '#submitsearch', function(event){
+	event.preventDefault();
+if ($('#search-bar').val() == ""){
+	alert("Enter something to look for, dummy.")
+}else{
+		console.log('submit search request')
+		$.ajax({
+		url: '/contacts',
+		type: 'GET',
+		dataType: 'json'
+	}).done(function(data){	
+		var searchstring = ($('#search-bar').val());
+		$('#search-bar').val("");
+		var arrofresults = [];
+		searchstring = new RegExp(searchstring,'i');
+		for (var i=0;i<data.length;i++){	
+			if ((data[i].name).search(searchstring) != -1 ){
+				arrofresults.push(data[i]);
+			}			
+		}
 
-
+		$('#contacts').empty();
+		$('#contacts').append("<h1>Search Results</h1><br>");
+		for (var i=0;i<arrofresults.length;i++){
+			var templateToUse = $('#contact_template').html();
+			var modalbutton = $('#mymodalbutton').html();
+			$('#contacts').append(Mustache.render(templateToUse,arrofresults[i]));
+			$('#delete').remove();
+		}//close for loop	
+			$('#contacts h1').hide()
+			$('#contacts h1').fadeIn(1000);
+			$('.contact').hide();
+			$('.contact').fadeIn(1000);
+			getRandomPic();
+})//close .done
+}
+})//close search click
 
 
 
 getCategories()
+
+
