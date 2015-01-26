@@ -8,6 +8,7 @@ function getCategories(){
 		dataType: 'json'
 	}).done(function(data){	
 		for (var i=0;i<data.length;i++){
+			var category_template = $('#category_template').html();
 			$('#categories').append(Mustache.render(category_template,data[i]));
 		}//close for loop
 	})//close .done
@@ -20,11 +21,14 @@ function makeCategorySelect(){
 		type: 'GET',
 		dataType: 'json'
 	}).done(function(data){	
-		$('#editcontact div').append("<select class='form-control' id=categorySelect></select>")
-		$('#categorySelect').append("<option>Please Select a Category</option>")
+
+		$('#save').before("<select class='form-control' id=categorySelect></select><br>");
+		$('#categorySelect').append("<option>Please Select a Category</option>");
 	 	for (var i=0;i<data.length;i++){
 			$('#categorySelect').append('<option id='+data[i].id+'>'+data[i].name+'</option>');
 		}//close for loop
+		valtoselect2 =  $('#contacts h1')[0].innerText;
+		$('#categorySelect').val(valtoselect2);
 	})//close .done
 }//close getCategories
 
@@ -36,13 +40,16 @@ function getContacts(whatCategoryId,templateToUse){
 		dataType: 'json'
 	}).done(function(data){
 		$('#contacts').empty();
-		$('#contacts').append("<h1>"+data.name+"</h1>")
+		$('#contacts').append("<h1>"+data.name+"</h1><br>");
 		data = data.contacts;
+		var modalbutton = $('#mymodalbutton').html();
 		for (var i=0;i<data.length;i++){
 			$('#contacts').append(Mustache.render(templateToUse,data[i]));
+			($('.contact .btn').last()).before(modalbutton);
 		}//close for loop	
-		$('#contacts').append(addContactForm)
-		getRandomPic()
+		var addContactForm = $('#addcontacttemplate').html();
+		$('#contacts').append(addContactForm);
+		getRandomPic();
 	})//close .done
 }//close getContacts
 
@@ -63,8 +70,9 @@ function saveEditChanges(idofpersontoedit){
 		dataType: 'json',
 		data: data
 	}).done(function(data){
-		console.log('getting category #'+data.category_id)
-		getContacts(data.category_id,contact_template)
+		console.log('getting category #'+data.category_id);
+		var contact_template = $('#contact_template').html();
+		getContacts(data.category_id,contact_template);
 	})//close .done
 }//close saveEditChanges
 
@@ -84,7 +92,8 @@ function addNew(whatcategory){
 		dataType: 'json',
 		data: data
 	}).done(function(data){
-		getContacts(whatcategory,contact_template)
+		var contact_template = $('#contact_template').html();
+		getContacts(whatcategory,contact_template);
 	})//close .done
 }
 
@@ -94,15 +103,11 @@ function getRandomPic(){
 	  url: 'http://api.randomuser.me/',
 	  dataType: 'json'
 	}).done(function(data){
-		imgSrc = data.results[0].user.picture.medium
+		imgSrc = data.results[0].user.picture.medium;
 	  console.log('finished fetching: '+imgSrc);
-	  $('input#add_picture').attr('value', imgSrc)
+	  $('input#add_picture').attr('value', imgSrc);
 	})
 }
-
-
-
-
 
 
 
@@ -112,44 +117,47 @@ function getRandomPic(){
 
 //BUTTON - VIEW CONTACTS FOR SPECIFIC CATEGORY
 	$('#categories').on('click', '#expand', function(event){
-		$('#editcontact').remove()
 		var id = $(event.toElement).data("category-id");
 		console.log('clicked on expand category #'+id);
+		var contact_template = $('#contact_template').html();
 		getContacts(id, contact_template);
 	})//close getContacts click
 
 
-//BUTTON - EDIT ON SPECIFIC CONTACT
-	$('#contacts').on('click', '#edit', function(event){
-		idofpersontoedit = this.parentElement.getAttribute("data-contact-id")
-		console.log("trying to edit person #"+idofpersontoedit)
-		$.ajax({
-			url: ('/contacts/'+idofpersontoedit),
-			type: 'GET'
-		}).done(function(data){
-			$('body').append(Mustache.render(edit_contact_template,data))	
-			makeCategorySelect()
-		})
-	})//close editContact click
-
-
 //BUTTON - DELETE ON SPECIFIC CONTACT
 	$('#contacts').on('click', '#delete', function(event){
-		idofpersontodelete = this.parentElement.getAttribute("data-contact-id")
-		categoryid = this.parentElement.getAttribute('data-category-id')
-		console.log("trying to delete person #"+idofpersontodelete)
+		idofpersontodelete = this.parentElement.getAttribute("data-contact-id");
+		categoryid = this.parentElement.getAttribute('data-category-id');
+		console.log("trying to delete person #"+idofpersontodelete);
 		$.ajax({
 			url: ('/contacts/'+idofpersontodelete),
 			type: 'DELETE'
 		}).done(function(data){
-					getContacts(categoryid,contact_template)
+			var contact_template = $('#contact_template').html();
+			getContacts(categoryid,contact_template);
 		})
 	})//close deleteContact click
 
 
+//BUTTON - EDIT ON SPECIFIC CONTACT
+	$('#contacts').on('click', '#edit', function(event){
+		idofpersontoedit = this.parentElement.getAttribute("data-contact-id");
+		console.log("trying to edit person #"+idofpersontoedit);
+		$.ajax({
+			url: ('/contacts/'+idofpersontoedit),
+			type: 'GET'
+		}).done(function(data){
+			var edit_contact_template = $('#edit_contact_template').html();
+			$('.modal-body').empty();
+			$('.modal-body').append(Mustache.render(edit_contact_template,data));
+			makeCategorySelect();
+		})
+	})//close editContact click
+
+
 //BUTTON - CANCEL ON EDIT FORM
 	$('body').on('click', '#cancel', function(event){
-		this.parentElement.parentElement.parentElement.remove()
+		this.parentElement.parentElement.parentElement.remove();
 	})//close edit cancel click
 
 
@@ -166,16 +174,14 @@ function getRandomPic(){
 		{
 			alert('Error: Please fill out all info.');
 		}else{
-				id = this.parentElement.parentElement.parentElement.getAttribute('data-contact-id')
-				saveEditChanges(id);
-				this.parentElement.parentElement.parentElement.remove()
+			id = this.parentElement.parentElement.parentElement.getAttribute('data-contact-id');
+			saveEditChanges(id);
 		}
 	})//close edit save click
 
 
-//BUTTON - SUBMIT ON ADD NEW FORM
+//BUTTON - ADD NEW SUBMIT
 	$('body').on('click', '#addnew', function(event){	
-		// debugger
 		event.preventDefault()
 		if (
 			($('#add_name').val() == '') |
@@ -186,8 +192,8 @@ function getRandomPic(){
 		{
 			alert('Error: Please fill out all info.');
 		}else{
-			categoryid = this.parentElement.parentElement.parentElement.parentElement.children[1].getAttribute('data-category-id')
-			addNew(categoryid)
+			categoryid = $('.contact')[0].getAttribute('data-category-id');
+			addNew(categoryid);
 			console.log('clicked on add new person to category #'+categoryid);
 		}
 	})//close addnew click
@@ -197,61 +203,5 @@ function getRandomPic(){
 
 
 
-
-
-
-
-
-
-
-
-// ***TEMPLATES*** ***TEMPLATES*** ***TEMPLATES*** ***TEMPLATES***
-
-var category_template = "\
-<li id=category>\
-{{name}}<br>\
-</li>\
-<button id=expand class='btn btn-primary' data-category-id={{id}}>View Contacts</button>\
-<br><br>"
-
-var contact_template = "\
-<div class=contact data-contact-id={{id}} data-category-id={{category_id}}>\
-<img align=left src={{picture}}>\
-{{name}}<br>\
-Age- {{age}}<br>\
-Address - {{address}}<br>\
-Cell - {{phone_number}}<br>\
-<button class='btn btn-info' id=edit>Edit</button> \
-<button class='btn btn-danger' id=delete>Delete</button><br>\
-<br><br><br><br></div>"
-
-var edit_contact_template = "\
-<form class='form form-horizontal'>\
-<center>\
-<div class='form-group' id=editcontact data-contact-id={{id}} data-category-id={{category_id}}><br>\
-<center><div class='blah'>\
-<input class='form-control' id=name value='{{name}}'><br>\
-<input class='form-control' id=age value='{{age}}'><br>\
-<input class='form-control' id=address value='{{address}}'><br>\
-<input class='form-control' id=cell value='{{phone_number}}'><br>\
-<input class='form-control' id=picture size=60 value='{{picture}}'><br>\
-<button class='btn btn-primary' id=save>Save</button> \
-<button class='btn btn-danger' id=cancel>Cancel</button><br><br>\
-<input type=hidden id=id value='{{id}}'>\
-<input type=hidden id=categoryid value='{{category_id}}'>\
-</div></div></form>"
-
-var addContactForm = "\
-<form class='form form-horizontal'>\
-<div class='form-group' id=addcontact>\
-<div class='col-md-7'>\
-<h3>Add a Contact</h3>\
-<input class='form-control' id=add_name placeholder='name'><br>\
-<input class='form-control' id=add_age placeholder='age'><br>\
-<input class='form-control' id=add_address placeholder='address'><br>\
-<input class='form-control' id=add_cell placeholder='phone_number'><br>\
-<input class='form-control' id=add_picture size=60 placeholder='attempting to fetch a picture url'><br>\
-<button class='btn btn-primary' id=addnew>Save</button>\
-</div></div></form>"
 
 getCategories()
