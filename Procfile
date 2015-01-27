@@ -1,1 +1,1 @@
-web: rackup server.rb -p 80
+web: rackup config.ru -p 80
