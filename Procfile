@@ -1,1 +1,1 @@
-web: rackup server.rb
+web: rackup config.ru
