@@ -1,1 +1,1 @@
-web: rackup config.ru -p 80
+web: rackup config.ru -p $PORT
