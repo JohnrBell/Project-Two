@@ -1,4 +1,4 @@
-#\ -w -p $PORT
+#\ -w -p 4567
 
 require 'rack/parser'
 
