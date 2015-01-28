@@ -52,12 +52,12 @@ function getContacts(whatCategoryId,templateToUse){
 			$('.row #maphere').last().append(template)
 		}//close for loop	
 			$('#contacts h1').hide()
-			$('#contacts h1').fadeIn(1000);
+			=$('#contacts h1').fadeIn(1000);
 			$('.contact').hide();
 			$('.contact').fadeIn(1000);
 
 		var addContactForm = $('#addcontacttemplate').html();
-		$('#contact').append(addContactForm);
+		$('#contacts').append(addContactForm);
 
 		getRandomPic();
 	})//close .done
